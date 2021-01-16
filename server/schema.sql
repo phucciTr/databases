@@ -16,20 +16,20 @@ CREATE TABLE users (
   userName VARCHAR(50)
 );
 
-CREATE TABLE rooms (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  roomName VARCHAR(30)
-);
+-- CREATE TABLE rooms (
+--   id INT PRIMARY KEY AUTO_INCREMENT,
+--   roomName VARCHAR(30)
+-- );
 
-CREATE TABLE ids (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  id_messages INT,
-  id_user INT,
-  id_room INT,
-  FOREIGN KEY (id_messages) REFERENCES messages(id),
-  FOREIGN KEY (id_user) REFERENCES users(id),
-  FOREIGN KEY (id_room) REFERENCES rooms(id)
-);
+-- CREATE TABLE ids (
+--   id INT PRIMARY KEY AUTO_INCREMENT,
+--   id_messages INT,
+--   id_user INT,
+--   id_room INT,
+--   FOREIGN KEY (id_messages) REFERENCES messages(id),
+--   FOREIGN KEY (id_user) REFERENCES users(id),
+--   FOREIGN KEY (id_room) REFERENCES rooms(id)
+-- );
 /*  Execute this file from the command line by typing:
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/

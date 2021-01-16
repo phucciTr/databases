@@ -1,37 +1,40 @@
 var db = require('../db');
 
 module.exports = {
-    // need to the roomName & users.name to get & post message
-
-  // server: ,
 
   messages: {
-    get: function () {}, // a function which produces all the messages
-    post: function (user, room) {
-      // app.post('/endpoint.js', (req, res) => {
+    get: function (cb) {
+      let queryString = 'SELECT * from messages';
 
-      //   .send({user, room, message});
-      //   /*server
-      //     if the user isn't on the users table
-      //       insert user to table
-      //     otherwise if the room isn't on the rooms table
-      //       insert the room name to the table
-      //     otherwise
-      //       get the user id and room id
-      //       insert the message to messages
-      //       send a success response
-      //   */
-      // });
+      db.query(queryString, (err, result) => {
+        console.log('result = ', result);
+        cb(null, result);
+      });
+
+    }, // a function which produces all the messages
+
+    post: function ({username, message, roomname}, cb) {
+
+      var queryString = `INSERT INTO messages VALUE(0, '${username}', "${message}", '${roomname}')`;
+
+      db.query(queryString, (err, result) => {
+        cb(null, result);
+      });
 
     } // a function which can be used to insert a message into the database
   },
 
   users: {
-    // Ditto as above.
+    // Ditto as above.req.
     get: function () {},
-    post: function (data) {
-      // write data to database
-      // console.log('data = ', data);
+
+    post: function ({userName}, cb) {
+
+      var queryString = `INSERT INTO users VALUE(0, '${userName}')`;
+
+      db.query(queryString, (err, result) => {
+        cb(null, result);
+      });
     }
   }
 };

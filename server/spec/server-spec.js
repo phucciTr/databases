@@ -16,53 +16,23 @@ describe('Persistent Node Chat Server', function() {
     });
     dbConnection.connect();
 
-    var tablename = 'ids'; // TODO: fill this out
+    var tablename = 'messages'; // TODO: fill this out
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
     dbConnection.query('truncate ' + tablename, done);
-    // dbConnection.query('SELECT * FROM messages', (err, result) => {
-    //   console.log('result = ', result);
-    // });
   });
 
   afterEach(function() {
     dbConnection.end();
   });
 
-  it('testing', function(done) {
-    console.log('Your first test ran.');
-
-    request.post({
-      url:'http://127.0.0.1:3000/classes/users',
-      form:{userName:'value'}
-    }, ()=>{})
-
-    // request({
-    //   method: 'POST',
-    //   uri: 'http://127.0.0.1:3000/classes/users',
-    //   json: { userName: 'Valjean'}
-    // });
-
-    // request.post({url:'http://service.com/upload', formData: formData}, function optionalCallback(err, httpResponse, body) {
-    //   if (err) {
-    //     return console.error('upload failed:', err);
-    //   }
-    //   console.log('Upload successful!  Server responded with:', body);
-    // });
-  });
-
-  xit('Should insert posted messages to the DB', function(done) {
+  it('Should insert posted messages to the DB', function(done) {
     // Post the user to the chat server.
-    console.log('Your second test ran.');
     request({
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/users',
-      json: {
-        userName: 'Valjean'
-        // message: 'hi',
-        // roomname: 'lobby'
-      }
+      json: { userName: 'Valjean' }
     }, function () {
       // Post a message to the node chat server:
       request({
@@ -85,19 +55,19 @@ describe('Persistent Node Chat Server', function() {
         dbConnection.query(queryString, queryArgs, function(err, results) {
 
           // Should have one result:
-          expect(results.length).to.equal(2);
+          expect(results.length).to.equal(1);
+          let userText = results[0].userMessage;
 
           // TODO: If you don't have a column named text, change this test.
-          expect(results[0].text).to.equal('In mercy\'s name, three days is all I need.');
+          expect(userText).to.equal('In mercy\'s name, three days is all I need.');
 
           done();
         });
       });
     });
-    // done();
   });
 
-  xit('Should output all messages from the DB', function(done) {
+  it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
     var queryString = 'SELECT * FROM messages';
     var queryArgs = [];
@@ -108,25 +78,12 @@ describe('Persistent Node Chat Server', function() {
     dbConnection.query(queryString, queryArgs, function(err) {
       if (err) { throw err; }
 
-      // request({
-      //   method: 'POST',
-      //   uri: 'http://127.0.0.1:3000/classes/messages',
-      //   json: {
-      //     username: 'Valjean',
-      //     message: 'Men like you can never change!',
-      //     roomname: 'main'
-      //   }
-      // }, (error, response, body) => {
-      //   var messageLog = JSON.parse(body);
-      //   expect(messageLog[0].text).to.equal('Men like you can never change!');
-      //   expect(messageLog[0].roomname).to.equal('main');
-      //   done();
-      // });
-
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
-      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      request.get('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         var messageLog = JSON.parse(body);
+        // console.log('messageLog = ', messageLog);
+
         expect(messageLog[0].text).to.equal('Men like you can never change!');
         expect(messageLog[0].roomname).to.equal('main');
         done();
