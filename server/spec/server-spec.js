@@ -11,32 +11,57 @@ describe('Persistent Node Chat Server', function() {
   beforeEach(function(done) {
     dbConnection = mysql.createConnection({
       user: 'root',
-      // password: 'student',
+      password: '',
       database: 'chat'
     });
     dbConnection.connect();
 
-    var tablename = 'messages'; // TODO: fill this out
+    var tablename = 'ids'; // TODO: fill this out
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
     dbConnection.query('truncate ' + tablename, done);
+    // dbConnection.query('SELECT * FROM messages', (err, result) => {
+    //   console.log('result = ', result);
+    // });
   });
 
   afterEach(function() {
     dbConnection.end();
   });
 
-  it('Should insert posted messages to the DB', function(done) {
-    // Post the user to the chat server.
+  it('testing', function(done) {
+    console.log('Your first test ran.');
 
+    request.post({
+      url:'http://127.0.0.1:3000/classes/users',
+      form:{userName:'value'}
+    }, ()=>{})
+
+    // request({
+    //   method: 'POST',
+    //   uri: 'http://127.0.0.1:3000/classes/users',
+    //   json: { userName: 'Valjean'}
+    // });
+
+    // request.post({url:'http://service.com/upload', formData: formData}, function optionalCallback(err, httpResponse, body) {
+    //   if (err) {
+    //     return console.error('upload failed:', err);
+    //   }
+    //   console.log('Upload successful!  Server responded with:', body);
+    // });
+  });
+
+  xit('Should insert posted messages to the DB', function(done) {
+    // Post the user to the chat server.
+    console.log('Your second test ran.');
     request({
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/users',
       json: {
-        username: 'Valjean',
-        message: 'hi',
-        roomname: 'lobby'
+        userName: 'Valjean'
+        // message: 'hi',
+        // roomname: 'lobby'
       }
     }, function () {
       // Post a message to the node chat server:
