@@ -93,11 +93,48 @@ describe('Persistent Node Chat Server', function() {
       // the message we just inserted:
       request.get('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         var messageLog = JSON.parse(body);
- 
+
         expect(messageLog[0].userMessage).to.equal('In mercy\'s name, three days is all I need.');
         expect(messageLog[0].roomName).to.equal('Hello');
         done();
       });
     });
   });
+
+
+
+  it('Should get only the user name from the DB', function(done) {
+    // POST messages request
+    request({
+      method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Phucci',
+        message: 'This is Phucci',
+        roomname: 'Zoom'
+      }
+    }, () => {
+      request({
+        method: 'POST',
+        uri: 'http://127.0.0.1:3000/classes/messages',
+        json: {
+          username: 'Michael',
+          message: 'This is Michael',
+          roomname: 'Zoom'
+        }
+      });
+
+      var queryString = 'SELECT userName FROM messages';
+
+      // GET username from db request
+      dbConnection.query(queryString, (err, results) => {
+
+        let name = results[0].userName;
+        expect(name).to.equal('Phucci');
+        done();
+
+      });
+    });
+  });
+
 });
