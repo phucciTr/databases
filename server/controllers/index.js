@@ -8,7 +8,7 @@ module.exports = {
 
       models.messages.get((err, result) => {
         // if (err) { throw err; }
-        console.log('result = ', result);
+        // console.log('result = ', result);
         res.status(200).json(result);
       });
     }, // a function which handles a get request for all messages
@@ -37,8 +37,6 @@ module.exports = {
         if (err) { throw err; }
         res.status(201).json(result);
       });
-
-
     }
   }
 };

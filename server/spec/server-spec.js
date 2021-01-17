@@ -69,6 +69,17 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
+    request({
+      method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Valjean',
+        message: 'In mercy\'s name, three days is all I need.',
+        roomname: 'Hello'
+      }
+    });
+
+
     var queryString = 'SELECT * FROM messages';
     var queryArgs = [];
     // TODO - The exact query string and query args to use
@@ -82,10 +93,9 @@ describe('Persistent Node Chat Server', function() {
       // the message we just inserted:
       request.get('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         var messageLog = JSON.parse(body);
-        // console.log('messageLog = ', messageLog);
-
-        expect(messageLog[0].text).to.equal('Men like you can never change!');
-        expect(messageLog[0].roomname).to.equal('main');
+ 
+        expect(messageLog[0].userMessage).to.equal('In mercy\'s name, three days is all I need.');
+        expect(messageLog[0].roomName).to.equal('Hello');
         done();
       });
     });
