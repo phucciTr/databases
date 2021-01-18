@@ -132,4 +132,36 @@ describe('Persistent Node Chat Server', function() {
     });
   });
 
+  it('Should all users from the "lobby" room in the DB', function(done) {
+    request({
+      method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Phucci',
+        text: 'This is Phucci',
+        roomname: 'lobby'
+      }
+    }, () => {
+      request({
+        method: 'POST',
+        uri: 'http://127.0.0.1:3000/classes/messages',
+        json: {
+          username: 'Michael',
+          text: 'This is Michael',
+          roomname: 'main'
+        }
+      });
+
+      // Retrieve username from db
+      var queryString = 'SELECT userName FROM messages WHERE roomName = "lobby"';
+
+      dbConnection.query(queryString, (err, results) => {
+        let name = results[0].userName;
+        expect(name).to.equal('Phucci');
+        done();
+      });
+    });
+
+  });
+
 });
