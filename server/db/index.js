@@ -2,25 +2,22 @@ var { Sequelize, model, datatypes } = require('sequelize');
 
 var db = new Sequelize('chat', 'root', '', {
   host: 'localhost',
-  dialect: 'mysql'
+  dialect: 'mysql',
+  // define: { timestamps: false }
 });
-
-// var db = new Sequelize('chat', 'root', '', {
-//   host: 'http://127.0.0.1:3306/',
-//   dialect: 'mysql'
-// });
-
-
 
 // we define the models we need using js--we don't need a schema file!
 var User = db.define('User', {
-  userName: Sequelize.STRING
+  userName: Sequelize.STRING,
 });
 
 var Message = db.define('Message', {
   userName: Sequelize.STRING,
   userMessage: Sequelize.STRING,
-  roomName: Sequelize.STRING
+  roomName: Sequelize.STRING,
+  userId: Sequelize.INTEGER,
+  createdAt: Sequelize.DATE,
+  updatedAt: Sequelize.DATE
 });
 
 

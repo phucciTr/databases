@@ -13,9 +13,9 @@ module.exports = {
 
     }, // a function which produces all the messages
 
-    post: function ({username, message, roomname}, cb) {
+    post: function ({username, text, roomname}, cb) {
 
-      var queryString = `INSERT INTO messages VALUE(0, '${username}', "${message}", '${roomname}')`;
+      var queryString = `INSERT INTO messages VALUE(0, '${username}', "${text}", '${roomname}')`;
 
       db.query(queryString, (err, result) => {
         cb(null, result);

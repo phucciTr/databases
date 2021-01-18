@@ -1,4 +1,6 @@
 var models = require('../models');
+var db = require('../db');
+
 
 module.exports = {
 
@@ -6,27 +8,34 @@ module.exports = {
 
     get: function (req, res) {
       db.Message.findAll({include: [db.User]})
-        .then(function(messages) {
-          res.json(messages);
+        .then((messages) => {
+          res.status(200).json(messages);
         });
     },
 
     post: function (req, res) {
-      let data = req.body;
-      // Find the record matching the specified criteria. If no such record exists, create one using the provided initial values. or, if you need to know whether a new record was created.
-      console.log('data:', data);
-      db.User.findOrCreate({where: {userName: req.body.userName}})
+      let {username, text, roomname} = req.body;
 
-        .spread(function(user, created) {
-          db.Message.create({
-            userid: user.get('id'),
-            userName: req.body.userName,
-            userMessage: req.body.userMessage,
-            roomName: req.body.roomName
-          }).then(function(message) {
-            res.sendStatus(201);
-          });
+      // Find the record matching the specified criteria. If no such record exists, create one using the provided initial values. or, if you need to know whether a new record was created.
+      db.User.findOrCreate({where: {userName: req.body.username}})
+        .then((user) => {
+          return user[0].dataValues.id;
+        })
+        .then((id) => {
+          let data = {userName: username, userMessage: text, roomName: roomname, userId: id};
+
+          db.Message.create(data)
+            .then((message) => {
+              res.status(201).json(message);
+            })
+            .catch((err) => {
+              if (err) { console.log('err = ', err); }
+            });
+        })
+        .catch((err) => {
+          if (err) { console.log('err = ', err); }
         });
+
     }
 
     // get: function (req, res) {
@@ -50,16 +59,21 @@ module.exports = {
   users: {
     get: function (req, res) {
       db.User.findAll()
-        .then(function(users) {
-          res.json(users);
+        .then((users) => {
+          res.status(200).json(users);
+        })
+        .catch((err) => {
+          if (err) { console.log('err = ', err); }
         });
     },
     post: function (req, res) {
-      db.User.findOrCreate({where: {userName: req.body.userName}})
-        // findOrCreate returns multiple resutls in an array
-        // use spread to assign the array to function arguments
-        .spread(function(user, created) {
-          res.sendStatus(created ? 201 : 200);
+
+      db.User.findOrCreate({where: {userName: req.body.username}})
+        .then((user) => {
+          res.status(201).json(user);
+        })
+        .catch((err) => {
+          if (err) { console.log('err = ', err); }
         });
     }
   }

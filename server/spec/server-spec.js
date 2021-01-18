@@ -28,19 +28,19 @@ describe('Persistent Node Chat Server', function() {
   });
 
   it('Should insert posted messages to the DB', function(done) {
-    // Post the user to the chat server.
+    // POST new users into db
     request({
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/users',
-      json: { userName: 'Valjean' }
+      json: { username: 'Valjean' }
     }, function () {
-      // Post a message to the node chat server:
+      // POST new message from new user into db
       request({
         method: 'POST',
         uri: 'http://127.0.0.1:3000/classes/messages',
         json: {
           username: 'Valjean',
-          message: 'In mercy\'s name, three days is all I need.',
+          text: 'In mercy\'s name, three days is all I need.',
           roomname: 'Hello'
         }
       }, function () {
@@ -68,49 +68,46 @@ describe('Persistent Node Chat Server', function() {
   });
 
   it('Should output all messages from the DB', function(done) {
-    // Let's insert a message into the db
+    // POST new message from new user into db
     request({
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/messages',
       json: {
         username: 'Valjean',
-        message: 'In mercy\'s name, three days is all I need.',
+        text: 'In mercy\'s name, three days is all I need.',
         roomname: 'Hello'
       }
-    });
+    }, () => {
+      var queryString = 'SELECT userName FROM messages';
+      var queryArgs = [];
 
+      dbConnection.query(queryString, queryArgs, function(err, results) {
+        if (err) { throw err; }
 
-    var queryString = 'SELECT * FROM messages';
-    var queryArgs = [];
-    // TODO - The exact query string and query args to use
-    // here depend on the schema you design, so I'll leave
-    // them up to you. */
+        // Now query the Node chat server and see if it returns
+        // the message we just inserted:
 
-    dbConnection.query(queryString, queryArgs, function(err) {
-      if (err) { throw err; }
-
-      // Now query the Node chat server and see if it returns
-      // the message we just inserted:
-      request.get('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
-        var messageLog = JSON.parse(body);
-
-        expect(messageLog[0].userMessage).to.equal('In mercy\'s name, three days is all I need.');
-        expect(messageLog[0].roomName).to.equal('Hello');
-        done();
+        request.get('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+          var messageLog = JSON.parse(body);
+          console.log('messageLog = ', messageLog);
+          expect(messageLog[0].userMessage).to.equal('In mercy\'s name, three days is all I need.');
+          expect(messageLog[0].roomName).to.equal('Hello');
+          done();
+        });
       });
     });
+
   });
 
 
-
   it('Should get only the user name from the DB', function(done) {
-    // POST messages request
+    // POST new messages from new users into db
     request({
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/messages',
       json: {
         username: 'Phucci',
-        message: 'This is Phucci',
+        text: 'This is Phucci',
         roomname: 'Zoom'
       }
     }, () => {
@@ -119,20 +116,18 @@ describe('Persistent Node Chat Server', function() {
         uri: 'http://127.0.0.1:3000/classes/messages',
         json: {
           username: 'Michael',
-          message: 'This is Michael',
+          text: 'This is Michael',
           roomname: 'Zoom'
         }
       });
 
+      // Retrieve username from db
       var queryString = 'SELECT userName FROM messages';
 
-      // GET username from db request
       dbConnection.query(queryString, (err, results) => {
-
         let name = results[0].userName;
         expect(name).to.equal('Phucci');
         done();
-
       });
     });
   });

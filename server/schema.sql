@@ -7,13 +7,19 @@ CREATE TABLE messages (
   id INT PRIMARY KEY AUTO_INCREMENT,
   userName VARCHAR(30),
   userMessage VARCHAR(50),
-  roomName VARCHAR(30)
+  roomName VARCHAR(30),
+  userId INT,
+  createdAt DATETIME,
+  updatedAt DATETIME
 );
 /* Create other tables and define schemas for them here! */
 
 CREATE TABLE users (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  userName VARCHAR(50)
+  id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  userName VARCHAR(50),
+  roomName VARCHAR(30),
+  createdAt DATETIME,
+  updatedAt DATETIME
 );
 
 -- CREATE TABLE rooms (
