@@ -7,7 +7,6 @@ module.exports = {
       let queryString = 'SELECT * from messages';
 
       db.query(queryString, (err, result) => {
-        // console.log('result = ', result);
         cb(null, result);
       });
 

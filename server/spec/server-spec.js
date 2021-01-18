@@ -78,7 +78,10 @@ describe('Persistent Node Chat Server', function() {
         roomname: 'Hello'
       }
     }, () => {
-      var queryString = 'SELECT userName FROM messages';
+      // var queryString = 'SELECT * FROM messages';
+      var queryString = 'SELECT rooms.roomName, users.userName, messages.userId FROM messages INNER JOIN users INNER JOIN rooms \
+                          ON (messages.userId = users.id) AND (messages.roomId = rooms.id)';
+
       var queryArgs = [];
 
       dbConnection.query(queryString, queryArgs, function(err, results) {
@@ -89,10 +92,21 @@ describe('Persistent Node Chat Server', function() {
 
         request.get('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
           var messageLog = JSON.parse(body);
-          console.log('messageLog = ', messageLog);
-          expect(messageLog[0].userMessage).to.equal('In mercy\'s name, three days is all I need.');
-          expect(messageLog[0].roomName).to.equal('Hello');
-          done();
+          let roomId = messageLog[0].roomId;
+
+          queryString = `SELECT rooms.roomName FROM messages INNER JOIN rooms \
+                        ON (messages.roomId = ${roomId} \
+                        AND (messages.roomId = rooms.id))`;
+
+          dbConnection.query(queryString, (err, results2) => {
+            expect(messageLog[0].userMessage).to.equal('In mercy\'s name, three days is all I need.');
+            expect(results2[0].roomName).to.equal('Hello');
+            expect(messageLog[0].UserId).to.equal(results[0].userId);
+            expect(results2[0].roomName).to.equal(results[0].roomName);
+            done();
+
+          });
+
         });
       });
     });
@@ -122,7 +136,10 @@ describe('Persistent Node Chat Server', function() {
       });
 
       // Retrieve username from db
-      var queryString = 'SELECT userName FROM messages';
+      // var queryString = 'SELECT userName FROM messages';
+      var queryString = 'SELECT users.userName FROM messages INNER JOIN users \
+                          ON (messages.userId = 2) \
+                          AND (messages.userId = users.id)';
 
       dbConnection.query(queryString, (err, results) => {
         let name = results[0].userName;
@@ -132,7 +149,7 @@ describe('Persistent Node Chat Server', function() {
     });
   });
 
-  it('Should all users from the "lobby" room in the DB', function(done) {
+  it('Should GET all users from the "lobby" room in the DB', function(done) {
     request({
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/messages',
@@ -150,16 +167,33 @@ describe('Persistent Node Chat Server', function() {
           text: 'This is Michael',
           roomname: 'main'
         }
+      }, () => {
+        request({
+          method: 'POST',
+          uri: 'http://127.0.0.1:3000/classes/messages',
+          json: {
+            username: 'Alex',
+            text: 'This is Alex',
+            roomname: 'lobby'
+          }
+        }, () => {
+          var queryString = 'SELECT users.userName FROM messages INNER JOIN users INNER JOIN rooms \
+                             ON (rooms.roomName = "lobby") \
+                             AND (messages.roomId = rooms.id) \
+                             AND (messages.userId = users.id)';
+
+          dbConnection.query(queryString, (err, results) => {
+            let name = results[0].userName;
+            let name2 = results[1].userName;
+            expect(name).to.equal('Phucci');
+            expect(name2).to.equal('Alex');
+            done();
+          });
+
+
+        });
       });
 
-      // Retrieve username from db
-      var queryString = 'SELECT userName FROM messages WHERE roomName = "lobby"';
-
-      dbConnection.query(queryString, (err, results) => {
-        let name = results[0].userName;
-        expect(name).to.equal('Phucci');
-        done();
-      });
     });
 
   });
