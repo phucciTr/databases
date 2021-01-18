@@ -36,6 +36,7 @@ Rooms.hasMany(Message);
 
 User.sync();
 Message.sync();
+Rooms.sync();
 
 exports.User = User;
 exports.Message = Message;
