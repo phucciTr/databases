@@ -18,19 +18,30 @@ var App = {
     MessagesView.initialize();
   },
 
+  writeAllToDB: (upstreamData, callback) => {
+    for (let key in upstreamData) {
+      let {text, username, roomname} = upstreamData[key];
+      Parse.writeToDB({text, username, roomname});
+    }
+  },
+
   fetch: function(callback = ()=>{}) {
+
     Parse.readAll((data) => {
 
-      let results = data.results;
-      if (!results) { results = data; }
+      if (data.results) {
 
-      RoomsView.appendRooms(results);
-      RoomsView.renderSelectedRoom();
+        App.writeAllToDB(data.results, Parse.readAllFromDB((DBdata) => {
 
-      let firstRoom = Object.keys(Rooms.addedRooms)[0];
-      RoomsView.renderRoom(firstRoom);
+          let results = DBdata;
+          RoomsView.appendRooms(results);
+          RoomsView.renderSelectedRoom();
 
-      callback();
+          let firstRoom = Object.keys(Rooms.addedRooms)[0];
+          RoomsView.renderRoom(firstRoom);
+          callback();
+        }));
+      }
     });
   },
 
