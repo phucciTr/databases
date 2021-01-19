@@ -23,7 +23,18 @@ var Parse = {
 
   readAll: function(successCB, errorCB = null) {
     $.ajax({
-      url: Parse.server,
+      url: this.server,
+      type: 'GET',
+      data: { order: '-createdAt' },
+      contentType: 'application/json',
+      success: successCB,
+      error: errorCB || function(error) {
+        console.error('chatterbox: Failed to fetch messages', error);
+      }
+    });
+
+    $.ajax({
+      url: this.database,
       type: 'GET',
       data: { order: '-createdAt' },
       contentType: 'application/json',

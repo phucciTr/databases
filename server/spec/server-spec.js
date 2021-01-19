@@ -56,7 +56,7 @@ describe('Persistent Node Chat Server', function() {
 
           // Should have one result:
           expect(results.length).to.equal(1);
-          let userText = results[0].userMessage;
+          let userText = results[0].text;
 
           // TODO: If you don't have a column named text, change this test.
           expect(userText).to.equal('In mercy\'s name, three days is all I need.');
@@ -79,7 +79,7 @@ describe('Persistent Node Chat Server', function() {
       }
     }, () => {
       // var queryString = 'SELECT * FROM messages';
-      var queryString = 'SELECT rooms.roomName, users.userName, messages.userId FROM messages INNER JOIN users INNER JOIN rooms \
+      var queryString = 'SELECT rooms.roomname, users.username, messages.userId FROM messages INNER JOIN users INNER JOIN rooms \
                           ON (messages.userId = users.id) AND (messages.roomId = rooms.id)';
 
       var queryArgs = [];
@@ -94,15 +94,15 @@ describe('Persistent Node Chat Server', function() {
           var messageLog = JSON.parse(body);
           let roomId = messageLog[0].roomId;
 
-          queryString = `SELECT rooms.roomName FROM messages INNER JOIN rooms \
+          queryString = `SELECT rooms.roomname FROM messages INNER JOIN rooms \
                         ON (messages.roomId = ${roomId} \
                         AND (messages.roomId = rooms.id))`;
 
           dbConnection.query(queryString, (err, results2) => {
-            expect(messageLog[0].userMessage).to.equal('In mercy\'s name, three days is all I need.');
-            expect(results2[0].roomName).to.equal('Hello');
+            expect(messageLog[0].text).to.equal('In mercy\'s name, three days is all I need.');
+            expect(results2[0].roomname).to.equal('Hello');
             expect(messageLog[0].UserId).to.equal(results[0].userId);
-            expect(results2[0].roomName).to.equal(results[0].roomName);
+            expect(results2[0].roomname).to.equal(results[0].roomname);
             done();
 
           });
@@ -137,12 +137,12 @@ describe('Persistent Node Chat Server', function() {
 
       // Retrieve username from db
       // var queryString = 'SELECT userName FROM messages';
-      var queryString = 'SELECT users.userName FROM messages INNER JOIN users \
+      var queryString = 'SELECT users.username FROM messages INNER JOIN users \
                           ON (messages.userId = 2) \
                           AND (messages.userId = users.id)';
 
       dbConnection.query(queryString, (err, results) => {
-        let name = results[0].userName;
+        let name = results[0].username;
         expect(name).to.equal('Phucci');
         done();
       });
@@ -177,14 +177,14 @@ describe('Persistent Node Chat Server', function() {
             roomname: 'lobby'
           }
         }, () => {
-          var queryString = 'SELECT users.userName FROM messages INNER JOIN users INNER JOIN rooms \
-                             ON (rooms.roomName = "lobby") \
+          var queryString = 'SELECT users.username FROM messages INNER JOIN users INNER JOIN rooms \
+                             ON (rooms.roomname = "lobby") \
                              AND (messages.roomId = rooms.id) \
                              AND (messages.userId = users.id)';
 
           dbConnection.query(queryString, (err, results) => {
-            let name = results[0].userName;
-            let name2 = results[1].userName;
+            let name = results[0].username;
+            let name2 = results[1].username;
             expect(name).to.equal('Phucci');
             expect(name2).to.equal('Alex');
             done();

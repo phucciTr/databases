@@ -22,7 +22,7 @@ var App = {
     Parse.readAll((data) => {
 
       let results = data.results;
-      console.log('results = ', results);
+      if (!results) { results = data; }
 
       RoomsView.appendRooms(results);
       RoomsView.renderSelectedRoom();

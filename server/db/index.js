@@ -7,15 +7,17 @@ var db = new Sequelize('chat', 'root', '', {
 
 // we define the models we need using js--we don't need a schema file!
 var User = db.define('User', {
-  userName: Sequelize.STRING,
+  username: Sequelize.STRING,
 });
 
 var Rooms = db.define('Rooms', {
-  roomName: Sequelize.STRING,
+  roomname: Sequelize.STRING,
 });
 
 var Message = db.define('Message', {
-  userMessage: Sequelize.STRING,
+  text: Sequelize.STRING,
+  username: Sequelize.STRING,
+  roomname: Sequelize.STRING,
   userId: Sequelize.INTEGER,
   roomId: Sequelize.INTEGER,
   createdAt: Sequelize.DATE,

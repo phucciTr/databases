@@ -17,19 +17,19 @@ module.exports = {
       let {username, text, roomname} = req.body;
 
       // Find the record matching the specified criteria. If no such record exists, create one using the provided initial values. or, if you need to know whether a new record was created.
-      db.User.findOrCreate({where: {userName: username}})
+      db.User.findOrCreate({where: {username: username}})
         .then((user) => {
           return user[0].dataValues.id;
         })
         .then((userId) => {
 
-          db.Rooms.findOrCreate({where: {roomName: roomname}})
+          db.Rooms.findOrCreate({where: {roomname: roomname}})
             .then((room) => {
               let roomId = room[0].dataValues.id;
               return [userId, roomId];
             })
             .then(([userId, roomId]) => {
-              let data = {userMessage: text, userId: userId, roomId: roomId};
+              let data = {text: text, username: username, roomname: roomname, userId: userId, roomId: roomId};
 
               db.Message.create(data)
                 .then((message) => {
@@ -73,7 +73,7 @@ module.exports = {
     },
     post: function (req, res) {
 
-      db.User.findOrCreate({where: {userName: req.body.username}})
+      db.User.findOrCreate({where: {username: req.body.username}})
         .then((user) => {
           res.status(201).json(user);
         })
