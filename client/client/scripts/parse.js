@@ -12,7 +12,20 @@ var Parse = {
       data: JSON.stringify(message),
       contentType: 'application/json',
       success: function (data) {
-        console.log('chatterbox: Message sent by ', message.username);
+        console.log('chatterbox: Message sent to local DB by ', message.username);
+      },
+      error: function (data) {
+        console.error('chatterbox: Failed to send message', data);
+      }
+    });
+
+    $.ajax({
+      url: this.server,
+      type: 'POST',
+      data: JSON.stringify(message),
+      contentType: 'application/json',
+      success: function (data) {
+        console.log('chatterbox: Message sent to HR server by ', message.username);
       },
       error: function (data) {
         console.error('chatterbox: Failed to send message', data);
