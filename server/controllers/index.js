@@ -1,6 +1,4 @@
-var models = require('../models');
 var db = require('../db');
-
 
 module.exports = {
 

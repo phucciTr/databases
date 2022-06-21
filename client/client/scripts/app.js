@@ -30,17 +30,17 @@ var App = {
     Parse.readAll((data) => {
 
       if (data.results) {
+        RoomsView.appendRooms(data.results);
+        RoomsView.renderSelectedRoom();
+        let firstRoom = Object.keys(Rooms.addedRooms)[0];
+        RoomsView.renderRoom(firstRoom);
 
         App.writeAllToDB(data.results, Parse.readAllFromDB((DBdata) => {
-
           let results = DBdata;
           RoomsView.appendRooms(results);
-          RoomsView.renderSelectedRoom();
-
-          let firstRoom = Object.keys(Rooms.addedRooms)[0];
-          RoomsView.renderRoom(firstRoom);
-          callback();
         }));
+
+        callback();
       }
     });
   },

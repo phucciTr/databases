@@ -2,7 +2,7 @@
 var Parse = {
 
   server: `http://parse.${window.CAMPUS}.hackreactor.com/chatterbox/classes/messages`,
-  database: 'http://127.0.0.1:3000/classes/messages',
+  database: 'http://localhost:3000/classes/messages',
 
   writeToDB: function(message, errorCB = null) {
 
@@ -76,15 +76,15 @@ var Parse = {
       }
     });
 
-    // $.ajax({
-    //   url: this.database,
-    //   type: 'GET',
-    //   data: { order: '-createdAt' },
-    //   contentType: 'application/json',
-    //   success: successCB,
-    //   error: errorCB || function(error) {
-    //     console.error('chatterbox: Failed to fetch messages', error);
-    //   }
-    // });
+    $.ajax({
+      url: this.database,
+      type: 'GET',
+      data: { order: '-createdAt' },
+      contentType: 'application/json',
+      success: successCB,
+      error: errorCB || function(error) {
+        console.error('chatterbox: Failed to fetch messages', error);
+      }
+    });
   }
 };
