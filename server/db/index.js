@@ -1,60 +1,63 @@
 var { Sequelize, model, datatypes } = require('sequelize');
+var mysql = require('mysql2/promise');
 
-var db = new Sequelize('chat', 'root', '', {
-  host: 'localhost',
-  dialect: 'mysql',
-});
+const initDataBase = async (databaseName) => {
+  var Users, Rooms, Messages;
 
-// we define the models we need using js--we don't need a schema file!
-var User = db.define('User', {
-  username: Sequelize.STRING,
-});
+  const connection = await mysql.createConnection({
+    user: 'root',
+    password: '',
+    database: 'mysql'
+  });
 
-var Rooms = db.define('Rooms', {
-  roomname: Sequelize.STRING,
-});
+  await connection.query(`CREATE DATABASE IF NOT EXISTS ${databaseName};`);
+  connection.end();
 
-var Message = db.define('Message', {
-  text: Sequelize.STRING,
-  username: Sequelize.STRING,
-  roomname: Sequelize.STRING,
-  userId: Sequelize.INTEGER,
-  roomId: Sequelize.INTEGER,
-  createdAt: Sequelize.DATE,
-  updatedAt: Sequelize.DATE
-});
+  var db = new Sequelize(`${databaseName}`, 'root', '', {
+    host: 'localhost',
+    dialect: 'mysql',
+  });
 
+  // we define the models we need using js--we don't need a schema file!
+  Users = db.define('Users', {
+    username: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
+    }
+  });
 
-// puts a UserId column on each Message instance
-// also gives us the `.setUser` method available
-// after creating a new instance of Message
-// enables bi-directional associations between Users and Messages
-Message.belongsTo(User);
-User.hasMany(Message);
+  Rooms = db.define('Rooms', {
+    roomname: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true
+    }
+  });
 
-// puts a roomId column on each Message instance
-Message.belongsTo(Rooms);
-Rooms.hasMany(Message);
-
-User.sync();
-Message.sync();
-Rooms.sync();
-
-exports.User = User;
-exports.Message = Message;
-exports.Rooms = Rooms;
+  Messages = db.define('Messages', {
+    text: Sequelize.STRING,
+    user: { type: Sequelize.INTEGER, allowNull: false },
+    room: { type: Sequelize.INTEGER, allowNull: false }
+  });
 
 
-// var mysql = require('mysql');
+  // puts a UserId column on each Message instance
+  // also gives us the `.setUser` method available
+  // after creating a new instance of Message
+  // enables bi-directional associations between Users and Messages
+  Messages.belongsTo(Users, { foreignKey: 'user' });
+  Users.hasMany(Messages, { foreignKey: 'user' });
 
-// // Create a database connection and export it from this file.
-// // You will need to connect with the user "root", no password,
-// // and to the database "chat".
+  // puts a roomId column on each Message instance
+  Messages.belongsTo(Rooms, { foreignKey: 'room' });
+  Rooms.hasMany(Messages, { foreignKey: 'room' });
 
-// var dbConnection = mysql.createConnection({
-//   user: 'root',
-//   password: '',
-//   database: 'chat'
-// });
+  await Rooms.sync();
+  await Users.sync();
+  await Messages.sync();
 
-// module.exports = dbConnection;
+  return { Rooms, Messages, Users }
+};
+
+module.exports = initDataBase;

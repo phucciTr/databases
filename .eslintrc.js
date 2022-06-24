@@ -5,6 +5,10 @@
  *   https://github.com/reactorcore/eslint-config-hackreactor
  */
 
+{
+  "parser": "@babel/eslint-parser",
+}
+
 module.exports = {
   extends: './node_modules/eslint-config-hackreactor/index.js'
 };

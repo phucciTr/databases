@@ -4,16 +4,30 @@ var Parse = {
   server: `http://parse.${window.CAMPUS}.hackreactor.com/chatterbox/classes/messages`,
   database: 'http://localhost:3000/classes/messages',
 
-  writeToDB: function(message, errorCB = null) {
+  // writeToDB: async function(message, errorCB = null) {
+
+  //   $.ajax({
+  //     url: Parse.database,
+  //     type: 'POST',
+  //     data: JSON.stringify(message),
+  //     contentType: 'application/json',
+  //     success: function (data) {
+  //       console.log('chatterbox: Message sent to local DB by ', message.username);
+  //     },
+  //     error: function (data) {
+  //       console.error('chatterbox: Failed to send message local DB', data);
+  //     }
+  //   });
+  // },
+
+  writeAllToDB: function(message, successCB, errorCB = null) {
 
     $.ajax({
-      url: Parse.database,
+      url: `${Parse.database}/batch`,
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
-      success: function (data) {
-        console.log('chatterbox: Message sent to local DB by ', message.username);
-      },
+      success: successCB,
       error: function (data) {
         console.error('chatterbox: Failed to send message local DB', data);
       }
@@ -67,17 +81,6 @@ var Parse = {
   readAll: function(successCB, errorCB = null) {
     $.ajax({
       url: this.server,
-      type: 'GET',
-      data: { order: '-createdAt' },
-      contentType: 'application/json',
-      success: successCB,
-      error: errorCB || function(error) {
-        console.error('chatterbox: Failed to fetch messages', error);
-      }
-    });
-
-    $.ajax({
-      url: this.database,
       type: 'GET',
       data: { order: '-createdAt' },
       contentType: 'application/json',

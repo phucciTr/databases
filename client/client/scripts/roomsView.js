@@ -20,10 +20,22 @@ var RoomsView = {
     this.$select.change();
   },
 
-  appendRooms: function(results) {
-
+  appendUpstreamRooms: function(results) {
     for (let key in results) {
       let {roomname, username, text} = results[key];
+
+      if (Rooms.isFiltered(roomname)) {
+        let messageObj = {username: username, message: text};
+        if (!Rooms.isPresent(roomname)) { Rooms.createNewRoom(roomname); }
+        Rooms.addMessage(roomname, messageObj);
+      }
+    }
+  },
+
+  appendRooms: function(results) {
+    for (let key in results) {
+      let {Room, User, text} = results[key];
+      let roomname = Room.roomname, username = User.username;
 
       if (Rooms.isFiltered(roomname)) {
         let messageObj = {username: username, message: text};
