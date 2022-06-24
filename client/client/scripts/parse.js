@@ -1,24 +1,8 @@
 
 var Parse = {
 
-  server: `http://parse.${window.CAMPUS}.hackreactor.com/chatterbox/classes/messages`,
+  upstreamServer: `http://parse.${window.CAMPUS}.hackreactor.com/chatterbox/classes/messages`,
   database: 'http://localhost:3000/classes/messages',
-
-  // writeToDB: async function(message, errorCB = null) {
-
-  //   $.ajax({
-  //     url: Parse.database,
-  //     type: 'POST',
-  //     data: JSON.stringify(message),
-  //     contentType: 'application/json',
-  //     success: function (data) {
-  //       console.log('chatterbox: Message sent to local DB by ', message.username);
-  //     },
-  //     error: function (data) {
-  //       console.error('chatterbox: Failed to send message local DB', data);
-  //     }
-  //   });
-  // },
 
   writeAllToDB: function(message, successCB, errorCB = null) {
 
@@ -64,7 +48,7 @@ var Parse = {
     });
 
     $.ajax({
-      url: this.server,
+      url: this.upstreamServer,
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
@@ -78,9 +62,9 @@ var Parse = {
 
   },
 
-  readAll: function(successCB, errorCB = null) {
+  readAllUpStream: function(successCB, errorCB = null) {
     $.ajax({
-      url: this.server,
+      url: this.upstreamServer,
       type: 'GET',
       data: { order: '-createdAt' },
       contentType: 'application/json',

@@ -23,7 +23,7 @@ var App = {
   },
 
   fetch: function(callback = ()=>{}) {
-    Parse.readAll((data) => {
+    Parse.readAllUpStream((data) => {
       if (data.results) {
         RoomsView.appendUpstreamRooms(data.results);
         RoomsView.renderSelectedRoom();

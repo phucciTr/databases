@@ -38,7 +38,7 @@ module.exports = {
     },
 
     batchPost: async (req, res) => {
-      let messages = req.body, successMsg;
+      let messages = req.body;
 
       for (let {username, text, roomname} of messages) {
         try {
@@ -65,7 +65,7 @@ module.exports = {
         }
         catch(e) { console.log('ERROR BATCH POSTING = ', e); }
       }
-      res.status(201).json(successMsg);
+      res.status(201).json('success');
     }
 
   },
